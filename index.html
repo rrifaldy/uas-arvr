@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
+    <script
+        src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <script
+        src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+    <script>
+        AFRAME.registerComponent('navigate-on-click', {
+            schema: {
+                url: { default: '' }
+            },
+            init: function () {
+                var data = this.data;
+                var el = this.el;
+
+                el.addEventListener('click', function () {
+                    window.location.href = data.url;
+                });
+            }
+        });
+    </script>
+    <title>UAS - Rifqi</title>
+</head>
+
+<body>
+    <a-scene>
+        <a-assets>
+            <a-asset-item id="village" src="assets/village/scene.gltf"></a-asset-item>
+            <img id="desertThumbnail" src="assets/desert.jpg">
+            <img id="forestThumbnail" src="assets/forest.jpg">
+            <img id="japanThumbnail" src="assets/japan.jpg">
+            <img id="cityThumbnail" src="assets/city.jpg">
+            <img id="mountainThumbnail" src="assets/mountain.jpg">
+        </a-assets>
+
+        <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+
+        <a-link href="ar.html" class="item" title="Augmented Reality" image="#forestThumbnail" scale="0.1 0.1 0.1"
+            position="0 0.5 1" navigate-on-click="url: ar.html"></a-link>
+
+        <a-gltf-model src="assets/wolf/scene.gltf" class="item" id="wolf" position="0 0.22 0.52" scale="0.02 0.02 0.02">
+        </a-gltf-model>
+
+        <a-gltf-model src="assets/person/scene.gltf" class="item" position="-0.05 0.22 0.52" scale="0.04 0.04 0.04">
+        </a-gltf-model>
+
+        <a-entity gltf-model="#village" position="0 0.05 0"></a-entity>
+
+        <a-camera wasd-controls="fly: true; acceleration: 15" look-controls position="0 0.1 0" cursor="rayOrigin: mouse"
+            rayCaster="objects: .item"></a-camera>
+        <script>
+            AFRAME.registerComponent('click-handler', {
+                init: function () {
+                    var self = this;
+
+                    this.el.addEventListener('model-loaded', function () {
+                        self.el.addEventListener('click', function () {
+                            console.log("Wolf Clicked");
+
+                            var animationComponent = self.el.getAttribute('animation');
+
+                            if (animationComponent) {
+                                self.el.removeAttribute('animation');
+                            }
+
+                            self.el.setAttribute('animation', {
+                                property: 'rotation',
+                                to: '0 360 0',
+                                dur: 1000,
+                                easing: 'linear'
+                            });
+                        });
+                    });
+                }
+            });
+
+            document.querySelector('a-scene').addEventListener('loaded', function () {
+                document.getElementById("wolf").setAttribute('click-handler', '');
+                document.getElementById("person").setAttribute('click-handler', '');
+            });
+        </script>
+    </a-scene>
+</body>
+
+</html>
